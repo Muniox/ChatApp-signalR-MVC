@@ -16,7 +16,19 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        return View();
+        var userName = HttpContext.Session.GetString(UserKey);
+
+        if (string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction(nameof(SignIn));
+        }
+
+        var vm = new IndexVm()
+        {
+            UserName = userName
+        };
+
+        return View(vm);
     }
 
     [HttpGet]
@@ -41,7 +53,6 @@ public class HomeController : Controller
     private void SignInUser(string vmUserName)
     {
         HttpContext.Session.SetString(key: UserKey, value: vmUserName);
-        throw new NotImplementedException();
     }
 
     public IActionResult Privacy()

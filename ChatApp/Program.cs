@@ -1,3 +1,5 @@
+using ChatApp.Hub;
+
 namespace ChatApp
 {
     public class Program
@@ -8,6 +10,15 @@ namespace ChatApp
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(12);
+                options.Cookie.Name = "ChatApp.Session";
+                options.Cookie.IsEssential = true;
+            });
+
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -26,9 +37,13 @@ namespace ChatApp
 
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapHub<ChatHub>("/chat");
 
             app.Run();
         }
